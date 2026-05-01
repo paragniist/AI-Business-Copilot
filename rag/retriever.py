@@ -14,6 +14,9 @@ def search_docs(query):
 
     results = db.similarity_search(query, k=3)
 
-    for i, doc in enumerate(results, 1):
-        print(f"\nResult {i}:")
-        print(doc.page_content)
+    combined = ""
+
+    for doc in results:
+        combined += doc.page_content + "\n\n"
+
+    return combined

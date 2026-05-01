@@ -1,10 +1,19 @@
-from rag.vector_store import create_vector_db
-from rag.retriever import search_docs
+from agents.router_agent import router_agent
+from agents.research_agent import research_agent
+from agents.analyst_agent import analyst_agent
+from agents.strategy_agent import strategy_agent
+from agents.response_agent import response_agent
 
-pdf_file = "data/annual_report.pdf"
+query = input("Ask business question: ")
 
-create_vector_db(pdf_file)
+route = router_agent(query)
 
-query = input("Ask question: ")
+context = research_agent(query)
 
-search_docs(query)
+analysis = analyst_agent(context, query)
+
+strategy = strategy_agent(analysis)
+
+final_output = response_agent(analysis, strategy)
+
+print(final_output)
