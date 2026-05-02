@@ -2,17 +2,17 @@ from utils.llm import ask_gemini
 
 def analyst_agent(context, query):
     prompt = f"""
-You are a business analyst.
+You are a business consultant.
 
-User Question:
+Question:
 {query}
 
-Business Context:
+Context:
 {context}
 
-Find:
-1. Root causes
-2. Key insights
-3. Important patterns
+Give only concise practical solution points.
+Use bullet points.
+No introduction.
+No repetition.
 """
     return ask_gemini(prompt)

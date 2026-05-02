@@ -8,6 +8,6 @@ Based on this analysis:
 
 {analysis}
 
-Give practical business recommendations.
+Give practical business recommendations .
 """
     return ask_gemini(prompt)

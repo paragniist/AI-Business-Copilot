@@ -1,10 +1,14 @@
-def response_agent(analysis, strategy):
+def response_agent(query, sources, solution):
     return f"""
-📌 BUSINESS REPORT
+📌 PROBLEM ASKED
+{query}
 
-## Problem Analysis
-{analysis}
+📚 SOURCES USED
+{sources}
 
-## Recommendations
-{strategy}
+💡 SOLUTION
+{solution}
+
+📝 SUMMARY
+The system analyzed internal business documents, identified the likely causes behind the issue, and generated practical actions to improve performance and decision-making.
 """

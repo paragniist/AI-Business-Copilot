@@ -11,7 +11,7 @@ def search_docs(query):
         embeddings,
         allow_dangerous_deserialization=True
     )
-
+    ## Retreiver used to search the database for relevant documents based on the query
     results = db.similarity_search(query, k=3)
 
     combined = ""
