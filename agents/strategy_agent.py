@@ -1,13 +1,21 @@
 from utils.llm import ask_gemini
 
-def strategy_agent(analysis):
+def strategy_agent(context):
     prompt = f"""
-You are a management consultant.
+You are a strategy consultant.
 
-Based on this analysis:
+Based on this:
 
-{analysis}
+{context}
 
-Give practical business recommendations .
+Return ONLY:
+
+💡 Recommended Actions
+• point
+• point
+• point
+
+Max 3 bullets.
+Short business language.
 """
     return ask_gemini(prompt)

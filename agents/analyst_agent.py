@@ -2,17 +2,22 @@ from utils.llm import ask_gemini
 
 def analyst_agent(context, query):
     prompt = f"""
-You are a business consultant.
+You are a top-tier management consultant.
 
-Question:
+Business Question:
 {query}
 
-Context:
+Data:
 {context}
 
-Give only concise practical solution points.
-Use bullet points.
-No introduction.
-No repetition.
+Return ONLY in this format:
+
+📊 Key Drivers
+• point
+• point
+• point
+
+Keep max 3 bullets.
+Short sharp lines only.
 """
     return ask_gemini(prompt)

@@ -1,0 +1,16 @@
+## Graph Design for LangGraph Architecture:
+
+Start
+↓
+Router
+↓
+Research
+↓
+Analysis
+↓
+Strategy
+↓
+Response
+↓
+End
+

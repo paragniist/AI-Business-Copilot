@@ -1,0 +1,145 @@
+ High-Level Architecture Diagram
+
+
+
+                    ┌──────────────────────┐
+                    │      User Query      │
+                    │  (Business Problem)  │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │     Router Agent     │
+                    │ Intent Understanding │
+                    │ Task Delegation      │
+                    └──────────┬───────────┘
+                               │
+          ┌────────────────────┼────────────────────┐
+          │                    │                    │
+          ▼                    ▼                    ▼
+┌────────────────┐   ┌────────────────┐   ┌────────────────┐
+│ Research Agent │   │ Analyst Agent  │   │ Strategy Agent │
+│ Retrieve Facts │   │ Root Cause AI  │   │ Recommendations│
+└───────┬────────┘   └────────┬───────┘   └────────┬───────┘
+        │                     │                    │
+        ▼                     │                    │
+┌──────────────────────────────────────────────┐
+│         RAG Knowledge Retrieval Layer        │
+│   FAISS + Embeddings + Business Documents    │
+│ Annual Reports | Sales Reports | Market Data │
+└──────────────────────────────────────────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │    Response Agent    │
+                    │ Structured Output    │
+                    │ Problem | Sources    │
+                    │ Solution | Summary   │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │   Final User Report  │
+                    └──────────────────────┘
+```
+
+# 1️⃣ User Layer
+
+Business user asks:
+
+Why did sales decline last quarter?
+
+# 2️⃣ Router Agent
+
+Understands intent.
+
+Examples:
+
+* needs analysis
+* needs recommendations
+* needs summary
+
+Then activates correct agents.
+
+---
+
+# 3️⃣ Research Agent
+
+Uses RAG retrieval to gather facts from company docs.
+
+---
+
+# 4️⃣ Analyst Agent
+
+Finds:
+
+* trends
+* anomalies
+* root causes
+* performance issues
+
+---
+
+# 5️⃣ Strategy Agent
+
+Creates:
+
+* growth plans
+* cost optimization
+* retention strategy
+* pricing actions
+
+---
+
+# 6️⃣ Knowledge Layer (Core Engine)
+
+Stores company intelligence using:
+
+## Components:
+
+* FAISS Vector DB
+* HuggingFace Embeddings
+* PDF Reports
+* Business Docs
+
+---
+
+# 7️⃣ Response Agent
+
+Formats into final clean output:
+
+```text id="j61w81"
+Problem Asked
+Sources Used
+Solution
+Summary
+```
+
+---
+
+It shows:
+
+✅ Full pipeline thinking
+✅ AI architecture knowledge
+✅ Agentic AI understanding
+✅ Data flow clarity
+✅ Real product mindset
+
+
+# 🚀 Tech Stack Architecture Version
+
+```text id="44l07r"
+Frontend (Future React UI)
+↓
+FastAPI Backend
+↓
+Agent Layer (Python)
+↓
+Gemini LLM
+↓
+RAG Layer (FAISS + Embeddings)
+↓
+Business Documents
+```
+
+---
