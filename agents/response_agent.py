@@ -7,9 +7,4 @@ def response_agent(query, sources, solution):
 {sources}
 
 {solution}
-
-📈 Expected Impact
-• Faster recovery in sales
-• Improved customer retention
-• Better profitability next quarter
 """

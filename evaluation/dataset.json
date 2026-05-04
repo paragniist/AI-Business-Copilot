@@ -1,0 +1,27 @@
+[
+  {
+    "question": "What is the name of the company in the report?",
+    "ground_truth": "The name of the company is Apex Retail.",
+    "contexts": ["Apex Retail is a leading provider of consumer goods."]
+  },
+  {
+    "question": "Why did sales decline in Q3?",
+    "ground_truth": "Sales declined in Q3 due to increased competitor pricing pressure and a drop in overall market demand in Region Y.",
+    "contexts": ["In Q3, sales saw a 30% drop primarily driven by aggressive competitor pricing and reduced demand in Region Y."]
+  },
+  {
+    "question": "What strategy is recommended to fix the sales drop?",
+    "ground_truth": "The recommended strategy is to adjust pricing tiers, reallocate marketing budget to targeted social ads, and introduce a limited-time promotional bundle.",
+    "contexts": ["To recover from the drop, we must adjust the pricing strategy in Region Y, focus on high-performing regions, and improve marketing campaigns through targeted ads."]
+  },
+  {
+    "question": "Who is the CEO?",
+    "ground_truth": "John Doe is the CEO of Apex Retail.",
+    "contexts": ["Under the leadership of CEO John Doe, Apex Retail has expanded to over 50 locations."]
+  },
+  {
+    "question": "Summarize the Q3 performance.",
+    "ground_truth": "Q3 saw a 30% revenue decline due to market conditions, but profit margins remained stable because of cost-cutting measures.",
+    "contexts": ["Despite a 30% revenue decline in Q3 due to harsh market conditions, the company maintained stable profit margins by implementing strict cost-cutting measures."]
+  }
+]

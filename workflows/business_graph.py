@@ -52,7 +52,7 @@ def strategy_node(state):
 def response_node(state):
     output = response_agent(
         state["query"],
-        "• Annual Report\n• Sales Report\n• Internal Business Documents",
+        "• Context retrieved from FAISS Vector DB",
         state["analysis"] + "\n\n" + state["strategy"]
     )
     return {"final_output": output}

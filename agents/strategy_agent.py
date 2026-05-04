@@ -4,6 +4,11 @@ def strategy_agent(context):
     prompt = f"""
 You are a strategy consultant.
 
+STRICT CONTEXT GROUNDING:
+- Answer ONLY from the provided context.
+- Do NOT use outside knowledge.
+- If the answer is not found in the context, output exactly: "Answer not found in the document".
+
 Based on this:
 
 {context}

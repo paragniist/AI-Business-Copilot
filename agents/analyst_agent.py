@@ -4,6 +4,11 @@ def analyst_agent(context, query):
     prompt = f"""
 You are a top-tier management consultant.
 
+STRICT CONTEXT GROUNDING:
+- Answer ONLY from the provided Data context.
+- Do NOT use outside knowledge.
+- If the answer is not found in the context, output exactly: "Answer not found in the document".
+
 Business Question:
 {query}
 
