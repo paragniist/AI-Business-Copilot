@@ -106,14 +106,16 @@ const DocumentsPage = () => {
   const fileInputRef = useRef(null);
 
   const handleUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
     setUploading(true);
     setMessage(null);
 
     const formData = new FormData();
-    formData.append('file', file);
+    Array.from(files).forEach(file => {
+      formData.append('files', file);
+    });
 
     try {
       const res = await fetch('http://localhost:8000/upload', {
@@ -123,7 +125,7 @@ const DocumentsPage = () => {
       
       const data = await res.json();
       if (res.ok) {
-        setMessage({ type: 'success', text: `Successfully processed and indexed: ${file.name}` });
+        setMessage({ type: 'success', text: data.message || `Successfully processed and indexed ${files.length} files.` });
       } else {
         setMessage({ type: 'error', text: data.detail || 'Failed to upload document.' });
       }
@@ -157,6 +159,7 @@ const DocumentsPage = () => {
         <input 
           type="file" 
           accept=".pdf" 
+          multiple
           ref={fileInputRef}
           style={{ display: 'none' }}
           onChange={handleUpload}
@@ -207,7 +210,7 @@ function App() {
       
       setResult({
         problem: data.analysis || "Identifying root causes and trends based on your query...",
-        sources: ["Context Retrieved from Vector DB"],
+        sources: data.sources && data.sources.length > 0 ? data.sources : [{ file: "System", excerpt: "No context retrieved or insufficient data." }],
         solution: data.strategy || "Generated strategic recommendations to tackle the problem.",
         summary: data.final_output || "A consolidated summary of the findings."
       });
@@ -216,7 +219,11 @@ function App() {
       setTimeout(() => {
         setResult({
           problem: "- Sales declined by 30% in Region Y\n- Increased competitor activity\n- Drop in product awareness",
-          sources: ["Q3_Sales_Report.pdf", "Marketing_Spend_Q3.csv", "Competitor_Analysis.docx"],
+          sources: [
+            { file: "Q3_Sales_Report.pdf", excerpt: "Sales declined by 30% in Region Y due to competitor pricing." },
+            { file: "Marketing_Spend_Q3.csv", excerpt: "Social media ad spend was reduced by 15%." },
+            { file: "Competitor_Analysis.docx", excerpt: "Aggressive competitor discounting captured 12% of our market share." }
+          ],
           solution: "1. Adjust pricing strategy in Region Y\n2. Reallocate marketing budget to targeted social ads\n3. Introduce a limited-time promotional bundle",
           summary: "The 30% sales drop is primarily driven by aggressive competitor pricing and reduced marketing visibility. By adjusting our pricing tier and boosting targeted ads, we can recover market share by Q4."
         });
@@ -247,24 +254,33 @@ function App() {
             {!loading && result && (
               <>
                 <div className="dashboard-grid">
-                  <Card title="Problem Analysis" icon="⚠️" iconClass="icon-problem">
-                    {result.problem}
+                  <Card title="Key Insights" icon="⚠️" iconClass="icon-problem">
+                    <div style={{ whiteSpace: 'pre-wrap' }}>{result.problem}</div>
                   </Card>
                   
-                  <Card title="Context Sources" icon="📄" iconClass="icon-sources">
-                    {result.sources.map((src, idx) => (
-                      <span key={idx} className="source-tag">{src}</span>
-                    ))}
+                  <Card title="Supporting Evidence" icon="📄" iconClass="icon-sources">
+                    <div className="sources-list" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      {result.sources.map((src, idx) => {
+                        if (typeof src === 'string') {
+                          return <div key={idx} className="source-item">• {src}</div>;
+                        }
+                        return (
+                          <div key={idx} className="source-item" style={{ padding: '0.75rem', backgroundColor: 'var(--bg-secondary)', borderRadius: '6px', fontSize: '0.9rem', lineHeight: '1.4' }}>
+                            <strong style={{ color: 'var(--accent-primary)' }}>• {src.file}</strong> → <span style={{ fontStyle: 'italic', color: 'var(--text-secondary)' }}>"{src.excerpt}"</span>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </Card>
                 </div>
 
                 <div className="dashboard-grid">
-                  <Card title="Strategic Solution" icon="💡" iconClass="icon-solution" fullWidth>
-                    {result.solution}
+                  <Card title="Strategic Recommendations" icon="💡" iconClass="icon-solution" fullWidth>
+                    <div style={{ whiteSpace: 'pre-wrap' }}>{result.solution}</div>
                   </Card>
                   
-                  <Card title="Executive Summary" icon="📝" iconClass="icon-summary" fullWidth>
-                    {result.summary}
+                  <Card title="Business Impact" icon="📝" iconClass="icon-summary" fullWidth>
+                    <div style={{ whiteSpace: 'pre-wrap' }}>{result.summary}</div>
                   </Card>
                 </div>
               </>

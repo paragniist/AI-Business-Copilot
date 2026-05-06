@@ -28,6 +28,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.on_event("startup")
+async def startup_event():
+    from utils.llm import ask_gemini
+    print("Performing LLM startup validation...")
+    response = ask_gemini("hello")
+    if "LLM_UNAVAILABLE" in response:
+        print(f"WARNING: LLM validation failed gracefully. API will start but LLM features may be unavailable. Details: {response}")
+    else:
+        print("LLM startup validation successful!")
+
 class AnalyzeRequest(BaseModel):
     query: str = Field(..., description="The business query to analyze", example="Analyze why sales dropped last quarter")
 
@@ -36,6 +46,7 @@ class AnalyzeResponse(BaseModel):
     final_output: str
     route: Optional[Dict[str, Any]] = None
     context: Optional[str] = None
+    sources: Optional[list] = None
     analysis: Optional[str] = None
     strategy: Optional[str] = None
 
@@ -68,6 +79,7 @@ async def analyze_query(request: AnalyzeRequest, background_tasks: BackgroundTas
             final_output=result.get("final_output", ""),
             route=result.get("route", {}),
             context=result.get("context", ""),
+            sources=result.get("sources", []),
             analysis=result.get("analysis", ""),
             strategy=result.get("strategy", "")
         )
@@ -85,17 +97,20 @@ async def favicon():
     return Response(content=b"", media_type="image/x-icon")
 
 @app.post("/upload")
-async def upload_file(file: UploadFile = File(...)):
+async def upload_file(files: list[UploadFile] = File(...)):
     try:
         os.makedirs("data", exist_ok=True)
-        file_path = f"data/{file.filename}"
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+        filenames = []
+        for file in files:
+            file_path = f"data/{file.filename}"
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+            filenames.append(file.filename)
         
         # Add to the RAG vector store
-        add_to_vector_db(file_path)
+        add_to_vector_db("data")
         
-        return {"filename": file.filename, "message": "Successfully indexed."}
+        return {"filenames": filenames, "message": f"Successfully indexed {len(filenames)} files."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to upload or process document: {str(e)}")
 

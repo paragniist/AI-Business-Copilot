@@ -13,7 +13,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 
 def get_ragas_llm_and_embeddings():
     # Ragas needs specific wrapper objects in some versions, but passing standard LangChain objects usually works in the evaluate() function directly.
-    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
+    llm = ChatGoogleGenerativeAI(model="gemini-3.1-pro-preview", temperature=0)
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     return llm, embeddings
 
@@ -121,5 +121,11 @@ def log_evaluation(query: str, contexts: list, answer: str, eval_results: dict):
         "metrics": eval_results
     }
     
+    try:
+        json_str = json.dumps(log_entry)
+    except TypeError:
+        log_entry["metrics"] = {k: str(v) for k, v in eval_results.items()} if isinstance(eval_results, dict) else str(eval_results)
+        json_str = json.dumps(log_entry)
+    
     with open(log_file, "a") as f:
-        f.write(json.dumps(log_entry) + "\n")
+        f.write(json_str + "\n")

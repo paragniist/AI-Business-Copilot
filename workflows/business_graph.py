@@ -14,6 +14,7 @@ class BusinessState(TypedDict):
     query: str
     route: dict
     context: str
+    sources: list
     analysis: str
     strategy: str
     final_output: str
@@ -27,16 +28,58 @@ def router_node(state):
 
 # Node 2: Research
 def research_node(state):
-    context = research_agent(state["query"])
-    return {"context": context}
+    search_res = research_agent(state["query"])
+    return {
+        "context": search_res.get("text", ""),
+        "sources": search_res.get("chunks", [])
+    }
 
 
 # Node 3: Analysis
 def analysis_node(state):
+    import json
     if state["route"].get("analysis"):
-        result = analyst_agent(state["context"], state["query"])
-        return {"analysis": result}
-    return {"analysis": ""}
+        result_str = analyst_agent(state["context"], state["query"])
+        if result_str.startswith("LLM_FAILURE:"):
+            return {"analysis": f"API Error: {result_str}", "sources": state.get("sources", [])}
+        try:
+            clean_str = result_str.replace("```json", "").replace("```", "").strip()
+            data = json.loads(clean_str)
+            
+            if "error" in data:
+                # Surface LLM API errors (like 429 Quota Exceeded) directly to the UI
+                analysis_text = f"LLM API Error: {data['error']} - {data.get('details', 'No details provided.')}"
+                new_sources = state.get("sources", [])
+            elif "problem_analysis" in data:
+                # Format the new structure into the analysis state string
+                parts = []
+                if data.get("problem_analysis") and data["problem_analysis"] != "Insufficient data":
+                    parts.append(f"Problem Analysis:\n{data['problem_analysis']}")
+                    
+                    if data.get("key_drivers"):
+                        drivers = "\\n".join([f"• {d}" for d in data['key_drivers']])
+                        parts.append(f"Key Drivers:\n{drivers}")
+                        
+                    if data.get("recommendations"):
+                        recs = "\\n".join([f"• {r}" for r in data['recommendations']])
+                        parts.append(f"Recommendations:\n{recs}")
+                        
+                    analysis_text = "\n\n".join(parts)
+                else:
+                    analysis_text = "Insufficient data"
+                
+                new_sources = data.get("compressed_sources", state.get("sources", []))
+            else:
+                analysis_text = data.get("analysis", "Insufficient data")
+                new_sources = data.get("compressed_sources", state.get("sources", []))
+                
+            return {
+                "analysis": analysis_text, 
+                "sources": new_sources
+            }
+        except Exception:
+            return {"analysis": result_str, "sources": state.get("sources", [])}
+    return {"analysis": "", "sources": state.get("sources", [])}
 
 
 # Node 4: Strategy

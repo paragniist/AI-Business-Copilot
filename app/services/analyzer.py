@@ -45,10 +45,13 @@ def process_query(query: str) -> dict:
     if classification == "SIMPLE":
         # Fast path for simple queries - minimal token usage, skip multi-agent graph
         try:
-            context = search_docs(query)
+            search_res = search_docs(query)
+            context_text = search_res.get("text", "")
+            chunks = search_res.get("chunks", [])
         except Exception as e:
             print(f"Retriever failed: {e}")
-            context = "No context found."
+            context_text = "No context found."
+            chunks = []
             
         prompt = f"""
 Answer the following business query very concisely (1-2 lines maximum).
@@ -59,7 +62,7 @@ STRICT CONTEXT GROUNDING:
 - If the answer is not found in the context, output exactly: "Answer not found in the document".
 
 Context: 
-{context}
+{context_text}
 
 Query: {query}
 """
@@ -68,7 +71,8 @@ Query: {query}
             "query": query,
             "final_output": short_answer,
             "route": {"classification": "SIMPLE", "path": "direct_llm_bypass"},
-            "context": context,
+            "context": context_text,
+            "sources": chunks,
             "analysis": "Skipped (Simple Query - No deep analysis needed)",
             "strategy": "Skipped (Simple Query - No strategy needed)"
         }
@@ -78,6 +82,7 @@ Query: {query}
             "query": query,
             "route": {},
             "context": "",
+            "sources": [],
             "analysis": "",
             "strategy": "",
             "final_output": ""
