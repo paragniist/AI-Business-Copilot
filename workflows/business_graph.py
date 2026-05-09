@@ -47,7 +47,7 @@ def analysis_node(state):
             data = json.loads(clean_str)
             
             if "error" in data:
-                # Surface LLM API errors (like 429 Quota Exceeded) directly to the UI
+                # Surface LLM API errors directly to the UI
                 analysis_text = f"LLM API Error: {data['error']} - {data.get('details', 'No details provided.')}"
                 new_sources = state.get("sources", [])
             elif "problem_analysis" in data:
@@ -57,12 +57,8 @@ def analysis_node(state):
                     parts.append(f"Problem Analysis:\n{data['problem_analysis']}")
                     
                     if data.get("key_drivers"):
-                        drivers = "\\n".join([f"• {d}" for d in data['key_drivers']])
+                        drivers = "\n".join([f"• {d}" for d in data['key_drivers']])
                         parts.append(f"Key Drivers:\n{drivers}")
-                        
-                    if data.get("recommendations"):
-                        recs = "\\n".join([f"• {r}" for r in data['recommendations']])
-                        parts.append(f"Recommendations:\n{recs}")
                         
                     analysis_text = "\n\n".join(parts)
                 else:
@@ -79,16 +75,16 @@ def analysis_node(state):
             }
         except Exception:
             return {"analysis": result_str, "sources": state.get("sources", [])}
-    return {"analysis": "", "sources": state.get("sources", [])}
+    return {"analysis": "Skipped", "sources": state.get("sources", [])}
 
 
 # Node 4: Strategy
 def strategy_node(state):
     if state["route"].get("strategy"):
-        base = state["analysis"] if state["analysis"] else state["context"]
+        base = state["analysis"] if state["analysis"] and state["analysis"] != "Skipped" else state["context"]
         result = strategy_agent(base)
         return {"strategy": result}
-    return {"strategy": ""}
+    return {"strategy": "Skipped"}
 
 
 # Node 5: Response

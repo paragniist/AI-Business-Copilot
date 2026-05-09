@@ -12,13 +12,20 @@ def router_agent(query):
         "strategy": False
     }
 
-    if "why" in query or "decline" in query or "problem" in query:
+    # If it's a "why" question or indicates a problem, it needs analysis
+    if any(word in query for word in ["why", "decline", "problem", "analyze", "causes"]):
         route["analysis"] = True
 
-    if "fix" in query or "recommend" in query or "improve" in query or "strategy" in query:
+    # If it asks for solutions or strategies
+    if any(word in query for word in ["fix", "recommend", "improve", "strategy", "solutions"]):
         route["strategy"] = True
 
-    if route["analysis"] is False and route["strategy"] is False:
+    # Default to analysis if nothing specific matched
+    if not route["analysis"] and not route["strategy"]:
         route["analysis"] = True
+
+    # LINKING: If analysis is active, strategy should usually follow to provide value
+    if route["analysis"]:
+        route["strategy"] = True
 
     return route

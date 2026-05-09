@@ -209,9 +209,9 @@ function App() {
       const data = await response.json();
       
       setResult({
-        problem: data.analysis || "Identifying root causes and trends based on your query...",
-        sources: data.sources && data.sources.length > 0 ? data.sources : [{ file: "System", excerpt: "No context retrieved or insufficient data." }],
-        solution: data.strategy || "Generated strategic recommendations to tackle the problem.",
+        problem: data.analysis === "Skipped" ? "Not applicable for this query." : (data.analysis || "Identifying root causes based on context..."),
+        sources: data.sources && data.sources.length > 0 ? data.sources : [{ file: "System", excerpt: "No specific document context retrieved." }],
+        solution: data.strategy === "Skipped" ? "No recommendations required for this request." : (data.strategy || "Formulating strategic recommendations..."),
         summary: data.final_output || "A consolidated summary of the findings."
       });
     } catch (error) {
